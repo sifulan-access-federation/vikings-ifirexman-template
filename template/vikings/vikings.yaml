@@ -1,0 +1,172 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ BRAND_NAME }}-vikings
+  labels:
+    app: {{ BRAND_NAME }}-vikings
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ BRAND_NAME }}-vikings
+  template:
+    metadata:
+      labels:
+        app: {{ BRAND_NAME }}-vikings
+    spec:
+      initContainers:
+        - name: init-vikings
+          image: busybox:1.34
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh"]
+          args:
+            - -c
+            - >-
+                chmod -R 775 /static /vikings &&
+                chown -R www-data: /static /vikings
+          volumeMounts:
+            - name: {{ BRAND_NAME }}-vikings-static-pvc
+              mountPath: /static
+            - name: {{ BRAND_NAME }}-vikings-media-pvc
+              mountPath: /vikings/media
+            - name: {{ BRAND_NAME }}-vikings-logs-pvc
+              mountPath: /vikings/logs
+      containers:
+        - name: vikings
+          image: ghcr.io/irfanhakim-as/vikings:0.0.3-dev
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "10Mi"
+            limits:
+              cpu: "2"
+              memory: "2Gi"
+          ports:
+            - name: vikings
+              protocol: TCP
+              containerPort: 80
+          env:
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ BRAND_NAME }}-vikings-secret
+                  key: SECRET_KEY
+            - name: DEBUG
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ BRAND_NAME }}-vikings-cm
+                  key: DEBUG
+            - name: VIKINGS_APP_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ BRAND_NAME }}-vikings-cm
+                  key: VIKINGS_APP_NAME
+            - name: DEFAULT_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ BRAND_NAME }}-vikings-cm
+                  key: DEFAULT_USER
+            - name: DEFAULT_USER_MAIL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ BRAND_NAME }}-vikings-cm
+                  key: DEFAULT_USER_MAIL
+            - name: DEFAULT_USER_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ BRAND_NAME }}-vikings-secret
+                  key: DEFAULT_USER_PASS
+            - name: VIKINGS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ BRAND_NAME }}-vikings-cm
+                  key: VIKINGS_HOST
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ BRAND_NAME }}-vikings-postgres-cm
+                  key: DB_HOST
+            - name: DB_TYPE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ BRAND_NAME }}-vikings-cm
+                  key: DB_TYPE
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ BRAND_NAME }}-vikings-postgres-cm
+                  key: DB_NAME
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ BRAND_NAME }}-vikings-postgres-secret
+                  key: DB_USER
+            - name: DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ BRAND_NAME }}-vikings-postgres-secret
+                  key: DB_PASS
+          volumeMounts:
+            - name: {{ BRAND_NAME }}-vikings-static-pvc
+              mountPath: /static
+            - name: {{ BRAND_NAME }}-vikings-media-pvc
+              mountPath: /vikings/media
+            - name: {{ BRAND_NAME }}-vikings-logs-pvc
+              mountPath: /vikings/logs
+            - name: {{ BRAND_NAME }}-vikings-site-config
+              mountPath: /etc/apache2/sites-available/000-default.conf
+              subPath: vikings-site-config.conf
+            - name: {{ BRAND_NAME }}-vikings-logo
+              mountPath: /static/core/img/logo.png
+              subPath: vikings-logo.png
+            - name: {{ BRAND_NAME }}-vikings-background
+              mountPath: /static/core/img/background.jpg
+              subPath: vikings-background.jpg
+            - name: {{ BRAND_NAME }}-vikings-favicon
+              mountPath: /static/core/img/favicon.ico
+              subPath: vikings-favicon.ico
+            - name: {{ BRAND_NAME }}-vikings-css
+              mountPath: /static/core/css/main.css
+              subPath: vikings-main.css
+      imagePullSecrets:
+        - name: ghcr-token-secret
+      volumes:
+        - name: {{ BRAND_NAME }}-vikings-static-pvc
+          persistentVolumeClaim:
+            claimName: {{ BRAND_NAME }}-vikings-static-pvc
+        - name: {{ BRAND_NAME }}-vikings-media-pvc
+          persistentVolumeClaim:
+            claimName: {{ BRAND_NAME }}-vikings-media-pvc
+        - name: {{ BRAND_NAME }}-vikings-logs-pvc
+          persistentVolumeClaim:
+            claimName: {{ BRAND_NAME }}-vikings-logs-pvc
+        - name: {{ BRAND_NAME }}-vikings-site-config
+          configMap:
+            name: {{ BRAND_NAME }}-vikings-site-config.conf
+        - name: {{ BRAND_NAME }}-vikings-logo
+          configMap:
+            name: {{ BRAND_NAME }}-vikings-logo.png
+        - name: {{ BRAND_NAME }}-vikings-background
+          configMap:
+            name: {{ BRAND_NAME }}-vikings-background.jpg
+        - name: {{ BRAND_NAME }}-vikings-favicon
+          configMap:
+            name: {{ BRAND_NAME }}-vikings-favicon.ico
+        - name: {{ BRAND_NAME }}-vikings-css
+          configMap:
+            name: {{ BRAND_NAME }}-vikings-main.css
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ BRAND_NAME }}-vikings-svc
+spec:
+  selector:
+    app: {{ BRAND_NAME }}-vikings
+  type: ClusterIP
+  ports:
+    - name: "{{ BRAND_NAME }}-vikings"
+      protocol: TCP
+      port: 80
+      targetPort: vikings

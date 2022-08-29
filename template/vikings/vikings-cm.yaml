@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ BRAND_NAME }}-vikings-cm
+data:
+  VIKINGS_APP_NAME: '{{ VIKINGS_APP_NAME }}'
+  DEBUG: '{{ DEBUG }}'
+  DB_TYPE: '{{ DB_TYPE }}'
+  DEFAULT_USER: '{{ BRAND_NAME }}'
+  DEFAULT_USER_MAIL: '{{ HOST_EMAIL }}'
+  VIKINGS_HOST: '{{ HOST }}'
