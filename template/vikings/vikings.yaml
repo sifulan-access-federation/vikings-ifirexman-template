@@ -85,7 +85,7 @@ spec:
             - name: DB_HOST
               valueFrom:
                 configMapKeyRef:
-                  name: {{ BRAND_NAME }}-vikings-postgres-cm
+                  name: {{ BRAND_NAME }}-vikings-database-cm
                   key: DB_HOST
             - name: DB_TYPE
               valueFrom:
@@ -95,17 +95,17 @@ spec:
             - name: DB_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: {{ BRAND_NAME }}-vikings-postgres-cm
+                  name: {{ BRAND_NAME }}-vikings-database-cm
                   key: DB_NAME
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ BRAND_NAME }}-vikings-postgres-secret
+                  name: {{ BRAND_NAME }}-vikings-database-secret
                   key: DB_USER
             - name: DB_PASS
               valueFrom:
                 secretKeyRef:
-                  name: {{ BRAND_NAME }}-vikings-postgres-secret
+                  name: {{ BRAND_NAME }}-vikings-database-secret
                   key: DB_PASS
           volumeMounts:
             - name: {{ BRAND_NAME }}-vikings-static-pvc
