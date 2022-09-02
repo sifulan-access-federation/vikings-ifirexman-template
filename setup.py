@@ -49,7 +49,7 @@ APP_NAME='VIKINGS'
 ADDITIONAL_REQUIREMENTS=[
     # 'REQUIREMENT'
     # eg. 'Existing PostgreSQL Database',
-    'Remote SQL database',
+    'Remote MariaDB database',
 ]
 
 
@@ -58,11 +58,11 @@ APPLICATION_FIELDS=[
     # vikings
     Field('VIKINGS_APP_NAME', 'VIKINGS Site Name', required=True, default='VIKINGS'),
     Field('DEFAULT_USER_PASS', 'VIKINGS Administrator Password', required=True, secret=True, immutable=True),
-    Field('DB_HOST', 'Existing Database Host', required=True, immutable=True, default='cs-prod-postgres-svc.central-svcs.svc.cluster.local'),
+    Field('DB_HOST', 'Existing Database Host', required=True, immutable=True, default='cs-prod-mariadb-svc.central-svcs.svc.cluster.local'),
     Field('DB_PORT', 'Existing Database Port', required=True, immutable=True, default='3306'),
-    Field('DB_TYPE', 'Database Type', required=True, immutable=True, default='postgresql'),
-    Field('DB_NAME', 'Database Name', required=True, immutable=True, default='$-vikings-postgres-db'),
-    Field('DB_USER', 'Existing Database User', required=True, immutable=True, secret=True, default='admin'),
+    Field('DB_TYPE', 'Database Type', required=True, immutable=True, default='mysql'),
+    Field('DB_NAME', 'Database Name', required=True, immutable=True, default='$-vikings-maria-db'),
+    Field('DB_USER', 'Existing Database User', required=True, immutable=True, secret=True, default='root'),
     Field('DB_PASS', 'Database Password', required=True, secret=True, immutable=True),
     Field('DEBUG', 'Django Debug Mode', required=True, default='False'),
     Field('SECRET_KEY', 'Django Secret Key', special=True, immutable=True, secret=True, ignore=True),
