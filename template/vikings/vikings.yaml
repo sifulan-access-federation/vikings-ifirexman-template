@@ -87,6 +87,11 @@ spec:
                 configMapKeyRef:
                   name: {{ BRAND_NAME }}-vikings-database-cm
                   key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ BRAND_NAME }}-vikings-database-cm
+                  key: DB_PORT
             - name: DB_TYPE
               valueFrom:
                 configMapKeyRef:
