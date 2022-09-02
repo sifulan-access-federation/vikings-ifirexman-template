@@ -19,7 +19,7 @@ fi
 
 # DEPLOYMENT PATHS
 binaries_path="$MANIFEST_PATH/binaries"
-postgres_path="$MANIFEST_PATH/postgres"
+database_path="$MANIFEST_PATH/database"
 vikings_path="$MANIFEST_PATH/vikings"
 # put other deployment paths here
 
@@ -128,10 +128,10 @@ then
         wait_pvc $BRAND_NAME-vikings-media-pvc
         apply_manifest $vikings_path/logs-pvc.yaml
         wait_pvc $BRAND_NAME-vikings-logs-pvc
-        # postgres
-        apply_manifest $postgres_path/postgres-cm.yaml $postgres_path/postgres-secret.yaml $postgres_path/postgres-createdb.yaml && \
-        wait_job $BRAND_NAME-vikings-postgres-createdb && \
-        delete_job $BRAND_NAME-vikings-postgres-createdb
+        # database
+        apply_manifest $database_path/database-cm.yaml $database_path/database-secret.yaml $database_path/database-createdb.yaml && \
+        wait_job $BRAND_NAME-vikings-database-createdb && \
+        delete_job $BRAND_NAME-vikings-database-createdb
     fi
     # UPDATE AND DEPLOY
     # do this during update or deployment
@@ -152,11 +152,11 @@ then
     delete_cm $BRAND_NAME-vikings-main.css $BRAND_NAME-vikings-favicon.ico $BRAND_NAME-vikings-background.jpg $BRAND_NAME-vikings-logo.png $BRAND_NAME-vikings-site-config.conf
     delete_manifest $vikings_path/vikings.yaml $vikings_path/vikings-cm.yaml $vikings_path/vikings-secret.yaml $vikings_path/static-pvc.yaml $vikings_path/media-pvc.yaml $vikings_path/logs-pvc.yaml
     delete_manifest $vikings_path/ingress.yaml
-    # postgres
-    apply_manifest $postgres_path/postgres-dropdb.yaml && \
-    wait_job $BRAND_NAME-vikings-postgres-dropdb && \
-    delete_job $BRAND_NAME-vikings-postgres-dropdb && \
-    delete_manifest $postgres_path/postgres-secret.yaml $postgres_path/postgres-cm.yaml
+    # database
+    apply_manifest $database_path/database-dropdb.yaml && \
+    wait_job $BRAND_NAME-vikings-database-dropdb && \
+    delete_job $BRAND_NAME-vikings-database-dropdb && \
+    delete_manifest $database_path/database-secret.yaml $database_path/database-cm.yaml
 
     # RESET BINARIES
     reset_binaries
