@@ -68,7 +68,7 @@ APPLICATION_FIELDS=[
     Field('SECRET_KEY', 'Django Secret Key', special=True, immutable=True, secret=True, ignore=True),
     # generic
     Field('SUPPORT_EMAIL', 'Support Email Address', required=True, default='ifirexman@sifulan.my'),
-    Field('STORAGE_CLASS', 'PVC Storage Class', required=True, immutable=True, default='freenas-nfs-csi'),
+    Field('STORAGE_CLASS', 'PVC Storage Class', required=True, immutable=True, default='longhorn'),
     Field('STORAGE_SIZE', 'PVC Storage Size', required=True, default='50Mi'),
 ]
 
