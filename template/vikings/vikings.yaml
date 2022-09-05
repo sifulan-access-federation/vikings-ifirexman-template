@@ -33,7 +33,7 @@ spec:
               mountPath: /vikings/logs
       containers:
         - name: vikings
-          image: ghcr.io/irfanhakim-as/vikings:0.0.3-stable
+          image: ghcr.io/irfanhakim-as/vikings-ifirexman:0.0.1-stable
           imagePullPolicy: IfNotPresent
           resources:
             requests:
