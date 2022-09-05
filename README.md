@@ -45,37 +45,28 @@ kubectl version --client
 pip3 install passlib==1.7.4
 ```
 
-### Prepare your VIKINGS client repository
-- Head over to the [vikings-ifirexman-template](https://github.com/sifulan-access-federation/vikings-ifirexman-template) repository on GitHub.
-- Click the green "Use this template" button.
-- Fill in the repository name and set the repository to private.
-  - Recommended repository name: `ORG_NAME-vikings-client`
-- Click the "Create repository from template" button.
-- In your newly generated repository, click the "Code" button dropdown.
-- Copy the `.git` SSH link to your repository.
-- Now from the terminal, clone your repository.
-
+### Clone the VIKINGS iFIRExMAN Template repository
 ```sh
-# git clone REPO_SSH_LINK
-git clone git@github.com:sifulan-access-federation/ifirexman-vikings-client.git
+# git clone https://github.com/sifulan-access-federation/vikings-ifirexman-template.git MY_REPO_NAME
+git clone https://github.com/sifulan-access-federation/vikings-ifirexman-template.git ifirexman-vikings-client
 ```
 
 ### Replace binary files (optional)
 If you wish to update or replace some binaries such as your deployment's logo, background, or css, you will need to replace them yourself before prepping your manifests or deploying your created manifests. Their file names and formats should be retained.
-- `REPO_LOCATION/template/binaries/vikings-logo.png`
+- `MY_REPO_LOCATION/template/binaries/vikings-logo.png`
   - Logo of your institution. Defaults to the SIFULAN logo.
-- `REPO_LOCATION/template/binaries/vikings-background.jpg`
+- `MY_REPO_LOCATION/template/binaries/vikings-background.jpg`
   - Background of your institution's VIKINGS portal. Defaults to an image of the Titiwangsa Lake Gardens, Kuala Lumpur.
-- `REPO_LOCATION/template/binaries/vikings-favicon.ico`
+- `MY_REPO_LOCATION/template/binaries/vikings-favicon.ico`
   - Favicon version of your institution's logo. Defaults to the SIFULAN logo.
-- `REPO_LOCATION/template/binaries/vikings-main.css`
+- `MY_REPO_LOCATION/template/binaries/vikings-main.css`
   - Your institution's VIKINGS portal's css. Find and replace the colour palette accordingly. Defaults to SIFULAN blue accents.
 
 ## Walkthrough
 
 ### Get into your repository
 ```sh
-# cd REPO_LOCATION
+# cd MY_REPO_LOCATION
 cd ~/ifirexman-vikings-client
 ```
 
