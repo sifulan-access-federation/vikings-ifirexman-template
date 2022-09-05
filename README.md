@@ -2,25 +2,82 @@
 
 ## Pre-flight checklist
 Fulfill all these items before running the script:
-- [ ] Install all required packages and libraries.
-  - [ ] kubectl.
-  - [ ] passlib (pip).
-- [ ] Prepare a dedicated host for VIKINGS.
-- [ ] Prepare a remote SQL database for VIKINGS (recommended: PostgreSQL or MariaDB).
-- [ ] [Replace binary files](#replace-binary-files) under `template/binaries` according to your institution.
+- [ ] Provisioned a Kubernetes cluster and logged into your Login node.
+- [ ] Prepare a Kubernetes namespace for VIKINGS.
+- [ ] Prepare a dedicated domain name for VIKINGS.
+- [ ] Prepare a remote MariaDB database for VIKINGS.
 
-### Replace binary files
+## Login node preparation
+
+### Install pre-requisites
+
+#### Update `yum` repository
+```sh
+sudo yum update -y
+```
+
+#### `git`, `python3` and `python3-pip`
+```sh
+sudo yum install -y git python3 python3-pip
+```
+
+#### `kubectl`
+```sh
+# add kubernetes.repo to yum repo
+cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearch
+enabled=1
+gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+EOF
+
+# install kubectl
+sudo yum install -y kubectl
+
+# check installation
+kubectl version --client
+```
+
+#### `passlib`
+```sh
+pip3 install passlib==1.7.4
+```
+
+### Prepare your VIKINGS client repository
+- Head over to the [vikings-ifirexman-template](https://github.com/sifulan-access-federation/vikings-ifirexman-template) repository on GitHub.
+- Click the green "Use this template" button.
+- Fill in the repository name and set the repository to private.
+  - Recommended repository name: `ORG_NAME-vikings-client`
+- Click the "Create repository from template" button.
+- In your newly generated repository, click the "Code" button dropdown.
+- Copy the `.git` SSH link to your repository.
+- Now from the terminal, clone your repository.
+
+```sh
+# git clone REPO_SSH_LINK
+git clone git@github.com:sifulan-access-federation/ifirexman-vikings-client.git
+```
+
+### Replace binary files (optional)
 If you wish to update or replace some binaries such as your deployment's logo, background, or css, you will need to replace them yourself before prepping your manifests or deploying your created manifests. Their file names and formats should be retained.
-- `template/binaries/vikings-logo.png`
+- `REPO_LOCATION/template/binaries/vikings-logo.png`
   - Logo of your institution. Defaults to the SIFULAN logo.
-- `template/binaries/vikings-background.jpg`
+- `REPO_LOCATION/template/binaries/vikings-background.jpg`
   - Background of your institution's VIKINGS portal. Defaults to an image of the Titiwangsa Lake Gardens, Kuala Lumpur.
-- `template/binaries/vikings-favicon.ico`
+- `REPO_LOCATION/template/binaries/vikings-favicon.ico`
   - Favicon version of your institution's logo. Defaults to the SIFULAN logo.
-- `template/binaries/vikings-main.css`
+- `REPO_LOCATION/template/binaries/vikings-main.css`
   - Your institution's VIKINGS portal's css. Find and replace the colour palette accordingly. Defaults to SIFULAN blue accents.
 
 ## Walkthrough
+
+### Get into your repository
+```sh
+# cd REPO_LOCATION
+cd ~/ifirexman-vikings-client
+```
 
 ### Run the script
 ```sh
@@ -36,7 +93,7 @@ The following requirements are required to use this script:
 * Host domain
 * Existing config file (if applicable)
 * Existing manifest (if applicable)
-* Remote SQL database
+* Remote MariaDB database
 1 - Yes
 2 - No
 Please select an option [1-2]:
@@ -107,30 +164,84 @@ If "Prep" was part of your operation selection, you will be guided to prepare a 
 
 The following list are all the fields required and configured for a *lite* VIKINGS deployment:
 
+#### `VIKINGS_APP_NAME`
 ```py
-# vikings
 Field('VIKINGS_APP_NAME', 'VIKINGS Site Name', required=True, default='VIKINGS'),
-Field('DEFAULT_USER_PASS', 'VIKINGS Administrator Password', required=True, secret=True, immutable=True),
-Field('DB_HOST', 'Existing Database Host', required=True, immutable=True, default='cs-prod-mariadb-svc.central-svcs.svc.cluster.local'),
-Field('DB_PORT', 'Existing Database Port', required=True, immutable=True, default='3306'),
-Field('DB_TYPE', 'Database Type', required=True, immutable=True, default='mysql'),
-Field('DB_NAME', 'Database Name', required=True, immutable=True, default='$-vikings-maria-db'),
-Field('DB_USER', 'Existing Database User', required=True, immutable=True, secret=True, default='root'),
-Field('DB_PASS', 'Database Password', required=True, secret=True, immutable=True),
-Field('DEBUG', 'Django Debug Mode', required=True, default='False'),
-Field('SECRET_KEY', 'Django Secret Key', special=True, immutable=True, secret=True, ignore=True),
-# generic
-Field('SUPPORT_EMAIL', 'Support Email Address', required=True, default='ifirexman@sifulan.my'),
-Field('STORAGE_CLASS', 'PVC Storage Class', required=True, immutable=True, default='freenas-nfs-csi'),
-Field('STORAGE_SIZE', 'PVC Storage Size', required=True, default='50Mi'),
-# additional
-Field('NAMESPACE', 'Kubernetes Namespace', hidden=False),
-Field('HOST', 'Application Host', hidden=False),
-Field('BRAND_NAME', 'Brand Name', hidden=True),
-Field('MANIFEST_PATH', 'Manifest Path', hidden=True),
-Field('HOST_EMAIL', 'Host Email', hidden=True),
-Field('HOST_LDAP', 'Host LDAP', hidden=True),
 ```
+- Name used for your VIKINGS site (eg. IDMS Portal). Defaults to "VIKINGS".
+
+#### `DEFAULT_USER_PASS`
+```py
+Field('DEFAULT_USER_PASS', 'VIKINGS Administrator Password', required=True, secret=True, immutable=True),
+```
+- User password belonging to the default VIKINGS Administrator user account.
+
+#### `DB_HOST`
+```py
+Field('DB_HOST', 'Remote Database Host', required=True, immutable=True, default='cs-prod-mariadb-svc.central-svcs.svc.cluster.local'),
+```
+- IP address of your Remote MariaDB server.
+
+#### `DB_PORT`
+```py
+Field('DB_PORT', 'Remote Database Port', required=True, immutable=True, default='3306'),
+```
+- Port used by your MariaDB server. MariaDB defaults to port "3306".
+
+#### `DB_TYPE`
+```py
+Field('DB_TYPE', 'Database Type', required=True, immutable=True, default='mysql'),
+```
+- Your database type. Defaults to MariaDB's type, "mysql".
+
+#### `DB_NAME`
+```py
+Field('DB_NAME', 'Database Name', required=True, immutable=True, default='$-vikings-maria-db'),
+```
+- A database will be created for your VIKINGS deployment on your Remote MariaDB server using this name.
+- Recommended name: `SHORT_ORG_NAME-vikings-maria-db`
+
+#### `DB_USER`
+```py
+Field('DB_USER', 'Remote Database User', required=True, immutable=True, secret=True, default='root'),
+```
+- Root user of your remote database.
+
+#### `DB_PASS`
+```py
+Field('DB_PASS', 'Remote Database Password', required=True, secret=True, immutable=True),
+```
+- Root user password of your remote database.
+
+#### `DEBUG`
+```py
+Field('DEBUG', 'Django Debug Mode', required=True, default='False'),
+```
+- This enables or disables Debug mode on your VIKINGS site. Defaults to "False" and should not be left as "True" in production.
+
+#### `SECRET_KEY`
+```py
+Field('SECRET_KEY', 'Django Secret Key', special=True, immutable=True, secret=True, ignore=True),
+```
+- Secret key required out of your VIKINGS site. This value is automatically generated by the script.
+
+#### `SUPPORT_EMAIL`
+```py
+Field('SUPPORT_EMAIL', 'Support Email Address', required=True, default='ifirexman@sifulan.my'),
+```
+- Support email address displayed by the Apache webserver in cases of error. Provide a support email address you can be reached from.
+
+#### `STORAGE_CLASS`
+```py
+Field('STORAGE_CLASS', 'PVC Storage Class', required=True, immutable=True, default='longhorn'),
+```
+- Storage class used by Kubernetes for your VIKINGS deployment. Defaults to "longhorn".
+
+#### `STORAGE_SIZE`
+```py
+Field('STORAGE_SIZE', 'PVC Storage Size', required=True, default='50Mi'),
+```
+- Storage size set by Kubernetes for your persistent storage. Independently used by 3 persistent volumes storing VIKINGS logs, media, and static files. Defaults to "50Mi" (50 Mebibytes) each.
 
 ### Verify new config
 ```sh
@@ -167,6 +278,6 @@ If `1` is submitted, the script will continue to carry out your chosen operation
 
 
 ## Notes
-- The username of the Default User is the `{{ BRAND_NAME }}` of the deployment (acquired from `{{ HOST }}`).
-- eg. `{{ HOST }}`=`vikings.sifulan.my` -> `{{ BRAND_NAME }}`=`vikings`.
-- The password of the Default User is the password passed as `{{ DEFAULT_USER_PASS }}`.
+- The username of the Default User is the `BRAND_NAME` (more commonly known as `SHORT_ORG_NAME`) of the deployment (acquired from `HOST`).
+- eg. `HOST`=`vikings.sifulan.my` -> `BRAND_NAME`=`vikings`.
+- The password of the Default User is the password passed as `DEFAULT_USER_PASS`.
