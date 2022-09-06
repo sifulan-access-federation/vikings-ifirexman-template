@@ -52,15 +52,13 @@ git clone https://github.com/sifulan-access-federation/vikings-ifirexman-templat
 ```
 
 ### Replace binary files (optional)
-If you wish to update or replace some binaries such as your deployment's logo, background, or css, you will need to replace them yourself before prepping your manifests or deploying your created manifests. Their file names and formats should be retained.
-- `MY_REPO_LOCATION/template/binaries/vikings-logo.png`
-  - Logo of your institution. Defaults to the SIFULAN logo.
-- `MY_REPO_LOCATION/template/binaries/vikings-background.jpg`
-  - Background of your institution's VIKINGS portal. Defaults to an image of the Titiwangsa Lake Gardens, Kuala Lumpur.
-- `MY_REPO_LOCATION/template/binaries/vikings-favicon.ico`
-  - Favicon version of your institution's logo. Defaults to the SIFULAN logo.
-- `MY_REPO_LOCATION/template/binaries/vikings-main.css`
-  - Your institution's VIKINGS portal's css. Find and replace the colour palette accordingly. Defaults to SIFULAN blue accents.
+If you wish to update or replace your deployment's logo, you will need to replace it yourself before running the script. Its file name and format should be retained.
+- `MY_REPO_LOCATION/template/binaries/vikings-logo.png` - Logo of your institution. Defaults to the iFIRExMAN logo.
+
+```sh
+# cp MY_ORG_LOGO.png MY_REPO_LOCATION/template/binaries/vikings-logo.png
+cp MY_ORG_LOGO.png ~/ifirexman-vikings-client/template/binaries/vikings-logo.png
+```
 
 ## Walkthrough
 
