@@ -56,20 +56,12 @@ ADDITIONAL_REQUIREMENTS=[
 # Application Fields
 APPLICATION_FIELDS=[
     # vikings
-    Field('VIKINGS_APP_NAME', 'VIKINGS Site Name', required=True, default='VIKINGS'),
-    Field('DEFAULT_USER_PASS', 'VIKINGS Administrator Password', required=True, secret=True, immutable=True),
-    Field('DB_HOST', 'Remote Database Host', required=True, immutable=True, default='cs-prod-mariadb-svc.central-svcs.svc.cluster.local'),
-    Field('DB_PORT', 'Remote Database Port', required=True, immutable=True, default='3306'),
-    Field('DB_TYPE', 'Database Type', required=True, immutable=True, default='mysql'),
-    Field('DB_NAME', 'Database Name', required=True, immutable=True, default='$-vikings-maria-db'),
+    Field('DB_NAME', 'VIKINGS Database Name', required=True, immutable=True, default='X-vikings-maria-db'),
     Field('DB_USER', 'Remote Database User', required=True, immutable=True, secret=True, default='root'),
     Field('DB_PASS', 'Remote Database Password', required=True, secret=True, immutable=True),
-    Field('DEBUG', 'Django Debug Mode', required=True, default='False'),
-    Field('SECRET_KEY', 'Django Secret Key', special=True, immutable=True, secret=True, ignore=True),
+    Field('SECRET_KEY', 'Django Secret Key', special=True, immutable=True, secret=True, ignore=True, hidden=True),
     # generic
-    Field('SUPPORT_EMAIL', 'Support Email Address', required=True, default='ifirexman@sifulan.my'),
-    Field('STORAGE_CLASS', 'PVC Storage Class', required=True, immutable=True, default='longhorn'),
-    Field('STORAGE_SIZE', 'PVC Storage Size', required=True, default='50Mi'),
+    Field('SUPPORT_EMAIL', 'Support Email Address', required=True, default='support@domain.org'),
 ]
 
 

@@ -33,7 +33,7 @@ spec:
               mountPath: /vikings/logs
       containers:
         - name: vikings
-          image: ghcr.io/irfanhakim-as/vikings:0.0.3-stable
+          image: ghcr.io/irfanhakim-as/vikings-ifirexman:0.0.1-stable
           imagePullPolicy: IfNotPresent
           resources:
             requests:
@@ -57,11 +57,6 @@ spec:
                 configMapKeyRef:
                   name: {{ BRAND_NAME }}-vikings-cm
                   key: DEBUG
-            - name: VIKINGS_APP_NAME
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ BRAND_NAME }}-vikings-cm
-                  key: VIKINGS_APP_NAME
             - name: DEFAULT_USER
               valueFrom:
                 configMapKeyRef:
@@ -125,15 +120,6 @@ spec:
             - name: {{ BRAND_NAME }}-vikings-logo
               mountPath: /static/core/img/logo.png
               subPath: vikings-logo.png
-            - name: {{ BRAND_NAME }}-vikings-background
-              mountPath: /static/core/img/background.jpg
-              subPath: vikings-background.jpg
-            - name: {{ BRAND_NAME }}-vikings-favicon
-              mountPath: /static/core/img/favicon.ico
-              subPath: vikings-favicon.ico
-            - name: {{ BRAND_NAME }}-vikings-css
-              mountPath: /static/core/css/main.css
-              subPath: vikings-main.css
       imagePullSecrets:
         - name: ghcr-token-secret
       volumes:
@@ -152,15 +138,6 @@ spec:
         - name: {{ BRAND_NAME }}-vikings-logo
           configMap:
             name: {{ BRAND_NAME }}-vikings-logo.png
-        - name: {{ BRAND_NAME }}-vikings-background
-          configMap:
-            name: {{ BRAND_NAME }}-vikings-background.jpg
-        - name: {{ BRAND_NAME }}-vikings-favicon
-          configMap:
-            name: {{ BRAND_NAME }}-vikings-favicon.ico
-        - name: {{ BRAND_NAME }}-vikings-css
-          configMap:
-            name: {{ BRAND_NAME }}-vikings-main.css
 ---
 apiVersion: v1
 kind: Service

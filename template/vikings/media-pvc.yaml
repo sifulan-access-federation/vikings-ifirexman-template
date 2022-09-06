@@ -3,9 +3,9 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ BRAND_NAME }}-vikings-media-pvc
 spec:
-  storageClassName: {{ STORAGE_CLASS }}
+  storageClassName: longhorn
   accessModes:
     - ReadWriteMany
   resources:
     requests:
-      storage: {{ STORAGE_SIZE }}
+      storage: 50Mi
