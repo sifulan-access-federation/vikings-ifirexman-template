@@ -115,7 +115,7 @@ then
     then
         # do this during update
         # vikings
-        delete_cm $BRAND_NAME-vikings-main.css $BRAND_NAME-vikings-favicon.ico $BRAND_NAME-vikings-background.jpg $BRAND_NAME-vikings-logo.png $BRAND_NAME-vikings-site-config.conf
+        delete_cm $BRAND_NAME-vikings-main.css $BRAND_NAME-vikings-background.jpg $BRAND_NAME-vikings-logo.png $BRAND_NAME-vikings-site-config.conf
         delete_manifest $vikings_path/vikings-cm.yaml $vikings_path/vikings-secret.yaml $vikings_path/vikings.yaml
         delete_manifest $vikings_path/ingress.yaml
     # DEPLOY
@@ -136,7 +136,7 @@ then
     # UPDATE AND DEPLOY
     # do this during update or deployment
     # vikings
-    create_cm_from_file vikings-site-config.conf vikings-logo.png vikings-background.jpg vikings-favicon.ico vikings-main.css
+    create_cm_from_file vikings-site-config.conf vikings-logo.png vikings-background.jpg vikings-main.css
     apply_manifest $vikings_path/vikings-cm.yaml $vikings_path/vikings-secret.yaml $vikings_path/vikings.yaml
     wait_deployment $BRAND_NAME-vikings
     apply_manifest $vikings_path/ingress.yaml
@@ -149,7 +149,7 @@ then
     echo "#==========DESTROYING $APP_NAME FOR $BRAND_NAME AT $(date +"%T")==========#"
     # do this during destroy
     # vikings
-    delete_cm $BRAND_NAME-vikings-main.css $BRAND_NAME-vikings-favicon.ico $BRAND_NAME-vikings-background.jpg $BRAND_NAME-vikings-logo.png $BRAND_NAME-vikings-site-config.conf
+    delete_cm $BRAND_NAME-vikings-main.css $BRAND_NAME-vikings-background.jpg $BRAND_NAME-vikings-logo.png $BRAND_NAME-vikings-site-config.conf
     delete_manifest $vikings_path/vikings.yaml $vikings_path/vikings-cm.yaml $vikings_path/vikings-secret.yaml $vikings_path/static-pvc.yaml $vikings_path/media-pvc.yaml $vikings_path/logs-pvc.yaml
     delete_manifest $vikings_path/ingress.yaml
     # database

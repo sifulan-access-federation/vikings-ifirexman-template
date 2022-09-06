@@ -123,9 +123,6 @@ spec:
             - name: {{ BRAND_NAME }}-vikings-background
               mountPath: /static/core/img/background.jpg
               subPath: vikings-background.jpg
-            - name: {{ BRAND_NAME }}-vikings-favicon
-              mountPath: /static/core/img/favicon.ico
-              subPath: vikings-favicon.ico
             - name: {{ BRAND_NAME }}-vikings-css
               mountPath: /static/core/css/main.css
               subPath: vikings-main.css
@@ -150,9 +147,6 @@ spec:
         - name: {{ BRAND_NAME }}-vikings-background
           configMap:
             name: {{ BRAND_NAME }}-vikings-background.jpg
-        - name: {{ BRAND_NAME }}-vikings-favicon
-          configMap:
-            name: {{ BRAND_NAME }}-vikings-favicon.ico
         - name: {{ BRAND_NAME }}-vikings-css
           configMap:
             name: {{ BRAND_NAME }}-vikings-main.css
