@@ -56,7 +56,7 @@ ADDITIONAL_REQUIREMENTS=[
 # Application Fields
 APPLICATION_FIELDS=[
     # vikings
-    Field('DB_NAME', 'VIKINGS Database Name', required=True, immutable=True, default='$-vikings-maria-db'),
+    Field('DB_NAME', 'VIKINGS Database Name', required=True, immutable=True, default='X-vikings-maria-db'),
     Field('DB_USER', 'Remote Database User', required=True, immutable=True, secret=True, default='root'),
     Field('DB_PASS', 'Remote Database Password', required=True, secret=True, immutable=True),
     Field('SECRET_KEY', 'Django Secret Key', special=True, immutable=True, secret=True, ignore=True, hidden=True),

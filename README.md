@@ -157,7 +157,7 @@ The following list are all the fields required and configured for a *lite* VIKIN
 
 #### `DB_NAME`
 ```py
-Field('DB_NAME', 'VIKINGS Database Name', required=True, immutable=True, default='$-vikings-maria-db'),
+Field('DB_NAME', 'VIKINGS Database Name', required=True, immutable=True, default='X-vikings-maria-db'),
 ```
 - A database will be created for your VIKINGS deployment on your Remote MariaDB server using this name.
 - Recommended name: `SHORT_ORG_NAME-vikings-maria-db`
@@ -176,7 +176,7 @@ Field('DB_PASS', 'Remote Database Password', required=True, secret=True, immutab
 
 #### `SUPPORT_EMAIL`
 ```py
-Field('SUPPORT_EMAIL', 'Support Email Address', required=True, default='ifirexman@sifulan.my'),
+Field('SUPPORT_EMAIL', 'Support Email Address', required=True, default='support@domain.org'),
 ```
 - Support email address displayed by the Apache webserver in cases of error. Provide a support email address you can be reached from.
 
