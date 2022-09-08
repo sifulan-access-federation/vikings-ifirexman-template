@@ -33,7 +33,7 @@ spec:
               mountPath: /vikings/logs
       containers:
         - name: vikings
-          image: ghcr.io/irfanhakim-as/vikings-ifirexman:0.0.1-stable
+          image: ghcr.io/sifulan-access-federation/vikings-ifirexman:0.0.1-stable
           imagePullPolicy: IfNotPresent
           resources:
             requests:
@@ -120,8 +120,6 @@ spec:
             - name: {{ BRAND_NAME }}-vikings-logo
               mountPath: /static/core/img/logo.png
               subPath: vikings-logo.png
-      imagePullSecrets:
-        - name: ghcr-token-secret
       volumes:
         - name: {{ BRAND_NAME }}-vikings-static-pvc
           persistentVolumeClaim:
