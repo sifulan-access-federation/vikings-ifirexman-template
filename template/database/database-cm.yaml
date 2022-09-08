@@ -3,6 +3,6 @@ kind: ConfigMap
 metadata:
   name: {{ BRAND_NAME }}-vikings-database-cm
 data:
-  DB_HOST: cs-prod-mariadb-svc.central-svcs.svc.cluster.local
+  DB_HOST: mariadb.central-svcs.svc.cluster.local
   DB_PORT: '3306'
   DB_NAME: '{{ DB_NAME }}'
