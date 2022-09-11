@@ -19,7 +19,6 @@ fi
 
 # DEPLOYMENT PATHS
 binaries_path="$MANIFEST_PATH/binaries"
-database_path="$MANIFEST_PATH/database"
 vikings_path="$MANIFEST_PATH/vikings"
 # put other deployment paths here
 
@@ -128,10 +127,6 @@ then
         wait_pvc $BRAND_NAME-vikings-media-pvc
         apply_manifest $vikings_path/logs-pvc.yaml
         wait_pvc $BRAND_NAME-vikings-logs-pvc
-        # database
-        apply_manifest $database_path/database-cm.yaml $database_path/database-secret.yaml $database_path/database-createdb.yaml && \
-        wait_job $BRAND_NAME-vikings-database-createdb && \
-        delete_job $BRAND_NAME-vikings-database-createdb
     fi
     # UPDATE AND DEPLOY
     # do this during update or deployment
@@ -152,11 +147,6 @@ then
     delete_cm $BRAND_NAME-vikings-logo.png $BRAND_NAME-vikings-site-config.conf
     delete_manifest $vikings_path/vikings.yaml $vikings_path/vikings-cm.yaml $vikings_path/vikings-secret.yaml $vikings_path/static-pvc.yaml $vikings_path/media-pvc.yaml $vikings_path/logs-pvc.yaml
     delete_manifest $vikings_path/ingress.yaml
-    # database
-    apply_manifest $database_path/database-dropdb.yaml && \
-    wait_job $BRAND_NAME-vikings-database-dropdb && \
-    delete_job $BRAND_NAME-vikings-database-dropdb && \
-    delete_manifest $database_path/database-secret.yaml $database_path/database-cm.yaml
 
     # RESET BINARIES
     reset_binaries
