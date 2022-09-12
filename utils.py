@@ -566,7 +566,7 @@ def get_requirements():
 # get namespace input
 def get_namespace():
     header='NAMESPACE'
-    namespace=subprocess.run(['kubectl','config','view','--minify','--output','jsonpath={..namespace}'], capture_output=True, text=True).stdout
+    namespace=subprocess.run(['kubectl','config','view','--minify','--output','jsonpath={..namespace}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.decode('utf-8')
     message='Current namespace: %s' % namespace
     option_list=['Yes','No']
     correct_ns=get_input(option_list,header=header,message=message)
