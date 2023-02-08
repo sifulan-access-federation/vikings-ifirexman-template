@@ -1,218 +1,117 @@
-# vikings-ifirexman-template
+# VIKINGS
 
-## Pre-flight checklist
-Fulfill all these items before running the script:
-- [ ] Provisioned a Kubernetes cluster and logged into your Login node.
-- [ ] Prepare a Kubernetes namespace for VIKINGS.
-- [ ] Prepare a dedicated domain name for VIKINGS.
-- [ ] Prepare a remote MariaDB database for VIKINGS.
+## Prerequisites
 
-## Login node preparation
+- Kubernetes 1.19+
+- Helm 3.2.0+
+- A MySQL database
 
-### Install pre-requisites
+## Preflight Checklist
 
-#### Update `yum` repository
-```sh
-sudo yum update -y
-```
+- [ ] Generate a secret key for the `Values.vikings.secret` setting.
 
-#### `git`, `python3` and `python3-pip`
-```sh
-sudo yum install -y git python3 python3-pip
-```
+    ```sh
+    python -c 'import random; print("".join([random.choice("abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)") for i in range(50)]))'
+    ```
 
-#### `kubectl`
-```sh
-# add kubernetes.repo to yum repo
-cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
-[kubernetes]
-name=Kubernetes
-baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearch
-enabled=1
-gpgcheck=1
-gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-EOF
+- [ ] Optional: Prepare VIKINGS portal logo. The logo should be in `png` format and have a transparent or no background. The recommended size is *x55 pixels.
 
-# install kubectl
-sudo yum install -y kubectl
+- [ ] Optional: Prepare VIKINGS portal favicon. The favicon should be in `ico` format and have a transparent or no background. The recommended size is 48x48 pixels.
 
-# check installation
-kubectl version --client
-```
+- [ ] Optional: Prepare VIKINGS portal background. The background image should be in `jpg` format. The recommended size is 1920x* pixels.
 
-#### `passlib`
-```sh
-pip3 install passlib==1.7.4
-```
+- [ ] Optional: Prepare custom VIKINGS portal CSS file. The CSS file should be in `css` format.
 
-### Clone the VIKINGS iFIRExMAN Template repository
-```sh
-# git clone https://github.com/sifulan-access-federation/vikings-ifirexman-template.git MY_REPO_NAME
-git clone https://github.com/sifulan-access-federation/vikings-ifirexman-template.git ifirexman-vikings-client
-```
+## Installation
 
-### Replace binary files (optional)
-If you wish to update or replace your deployment's logo, you will need to replace it yourself before running the script. Its file name and format should be retained.
-- `MY_REPO_LOCATION/template/binaries/vikings-logo.png` - Logo of your institution. Defaults to the iFIRExMAN logo.
+1. Add the chart repository.
 
-```sh
-# cp MY_ORG_LOGO.png MY_REPO_LOCATION/template/binaries/vikings-logo.png
-cp MY_ORG_LOGO.png ~/ifirexman-vikings-client/template/binaries/vikings-logo.png
-```
+    ```sh
+    helm repo add ifirexman https://sifulan-access-federation.github.io/ifirexman-charts
+    ```
 
-## Walkthrough
+2. Prepare `values.yaml` file. See the [Parameters](#parameters) section for more information.
 
-### Get into your repository
-```sh
-# cd MY_REPO_LOCATION
-cd ~/ifirexman-vikings-client
-```
+3. Run helm install. Replace `$release_name` and `$namespace` accordingly. Uncomment the `--set` and `--set-file` options if you have prepared the logo, favicon, background and/or CSS file.
 
-### Run the script
-```sh
-./kuborc
-```
+    ```sh
+    helm install $release_name -n $namespace --create-namespace \
+        # --set vikings.logo="$(base64 logo.png)" \
+        # --set vikings.favicon="$(base64 favicon.ico)" \
+        # --set vikings.background="$(base64 background.jpg)" \
+        # --set-file vikings.css="main.css" \
+    -f values.yaml --wait ifirexman-charts/vikings
+    ```
 
-### Requirements check
-```sh
-#==========REQUIREMENTS==========#
-The following requirements are required to use this script:
-* kubectl
-* passlib (pip)
-* Host domain
-* Existing config file (if applicable)
-* Existing manifest (if applicable)
-* Remote MariaDB database
-1 - Yes
-2 - No
-Please select an option [1-2]:
-```
+## Uninstallation
 
-If all requirements have been fulfilled, submit `1`.
+1. Run helm uninstall. Replace `$release_name` and `$namespace` accordingly.
 
-### Namespace check
-```sh
-#==========NAMESPACE==========#
-Current namespace: vikings
-1 - Yes
-2 - No
-Please select an option [1-2]:
-```
+    ```sh
+    helm uninstall $release_name -n $namespace
+    ```
 
-If you are currently in the correct namespace, submit `1`. Else, submit `2` and provide the correct namespace.
+## Upgrading
 
-### Operation selection
-```sh
-#==========OPERATION==========#
-1 - Prep [...]
-2 - Deploy
-3 - Update
-4 - Destroy
-Please select an option [1-4]:
-```
+1. Update the chart repository.
 
-- Select "Prep" by submitting `1` if your desired operation involves creating or updating your manifests.
-- Select "Deploy" to deploy your specified institution's existing manifests (in the `file` folder).
-- Select "Update" to redeploy your institution's existing deployments (destroys everything but existing persistent storage and redeploy).
-- Select "Destroy" to destroy everything including manifests and keep a backup of the institution's existing config.
+    ```sh
+    helm repo update ifirexman
+    ```
 
-### Prep operation
-```sh
-#==========PREP OPERATION==========#
-1 - Prep only
-2 - Prep and deploy
-3 - Prep and update
-Please select an option [1-3]:
-```
+2. Prepare `values.yaml` file. See the [Parameters](#parameters) section for more information.
 
-If "Prep" was selected, an additional selection must be made:
-- Select "Prep only" by submitting `1` if you intend to only prepare manifests for your institution.
-- Select "Prep and deploy" to prepare your manifests and deploy them immediately after.
-- Select "Prep and update" to prepare your manifests and update existing deployments (eg. destroy and deploy while retaining existing persistent storage).
+3. Run helm upgrade. Replace `$release_name` and `$namespace` accordingly. Uncomment the `--set` and `--set-file` options if you have prepared the logo, favicon, background and/or CSS file.
 
-### VIKINGS Host
-Regardless of the selected operation, you will be required to provide a host URL for VIKINGS. This URL will be used in your deployment, as well as to identify your manifests. This Host URL will also be used to determine the values of certain variables, not limited to those shown in the following example:
+    ```sh
+    helm upgrade $release_name -n $namespace \
+        # --set vikings.logo="$(base64 logo.png)" \
+        # --set vikings.favicon="$(base64 favicon.ico)" \
+        # --set vikings.background="$(base64 background.jpg)" \
+        # --set-file vikings.css="main.css" \
+    -f values.yaml --wait ifirexman-charts/vikings
+    ```
 
-```sh
-#==========VIKINGS HOST==========#
-Vikings Host URL [vikings.com]: testbed.vikings.e-id.my
-CONFIG_FILE=config/.config-testbed-devel
-BRAND_NAME=testbed
-MANIFEST_PATH=file/testbed-devel
-```
+## Parameters
 
-### Prepare new config
-If "Prep" was part of your operation selection, you will be guided to prepare a new config that will be used for your deployments. During this process, you will be prompted for values for all the fields configured in `setup.py`. Depending on how the field was configured, the field may be:
-- `required` and fail the process if no value is provided.
-- `default` value to fallback should no value is provided by the user.
-- `secret` which will encode the value in base64 when placed in your manifests.
-- `immutable` and cannot be configured during an "Update" session, instead relying on its value from an existing config if available.
-- `special` where the field has a specific way of handling configured in the `handle_special_fields` method found in `utils.py`.
-- `ignore` which flags the field to be ignored and requires no input from the user for its value (often paired with `special=True` for special fields' dependencies).
-- `hidden` fields and their values are omitted from the "Verify new config" session, but can still be found in the completed config file.
-
-The following list are all the fields required and configured for a *lite* VIKINGS deployment:
-
-#### `DB_NAME`
-```py
-Field('DB_NAME', 'VIKINGS Database Name', required=True, immutable=True, default='X-vikings-maria-db'),
-```
-- A database will be created for your VIKINGS deployment on your Remote MariaDB server using this name.
-- Recommended name: `SHORT_ORG_NAME-vikings-maria-db`
-
-#### `DB_USER`
-```py
-Field('DB_USER', 'Remote Database User', required=True, immutable=True, secret=True, default='root'),
-```
-- Root user of your remote database.
-
-#### `DB_PASS`
-```py
-Field('DB_PASS', 'Remote Database Password', required=True, secret=True, immutable=True),
-```
-- Root user password of your remote database.
-
-#### `SUPPORT_EMAIL`
-```py
-Field('SUPPORT_EMAIL', 'Support Email Address', required=True, default='support@domain.org'),
-```
-- Support email address displayed by the Apache webserver in cases of error. Provide a support email address you can be reached from.
-
-### Verify new config
-```sh
-#==========VERIFY NEW CONFIG==========#
-NAMESPACE : devel
-HOST : testbed.vikings.e-id.my
-...
-STUDENT_REALM : UNAVAILABLE
-1 - Yes
-2 - No
-Please select an option [1-2]:
-```
-
-- Once you have provided all the required values for each field, you will be prompted to check and verify the config you have prepared.
-- If `1` is selected, manifests specific to your institution will be prepared according to the new config and the script will then carry on.
-- If "Prep and deploy" was selected, your manifests will be deployed after.
-- Likewise, if "Prep and update" was selected, your existing deployments will be updated according to the newly prepared config.
-
-### Existing config
-If "Prep" was not part of your operation selection, the script will instead proceed to look for an existing config and manifest of your institution according to your input in [VIKINGS host](#vikings-host). If this was found, you will be prompted to confirm the existing config of your institution.
-
-```sh
-#==========EXISTING CONFIG==========#
-NAMESPACE : devel
-HOST : testbed.vikings.e-id.my
-...
-STUDENT_REALM : UNAVAILABLE
-1 - Yes
-2 - No
-Please select an option [1-2]:
-```
-
-If `1` is submitted, the script will continue to carry out your chosen operation.
-
-
-## Notes
-- The username of the default VIKINGS Administrator is the `BRAND_NAME` (more commonly known as `SHORT_ORG_NAME`) of the deployment (acquired from `HOST`).
-- eg. `HOST`=`vikings.sifulan.my` -> `BRAND_NAME`=`vikings`.
-- The password of the default VIKINGS Administrator is `ifirexman`.
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| db.host | string | `"mariadb.central-svcs.svc.cluster.local"` | Database server |
+| db.name | string | `"ifirexman-vikings"` | Database name |
+| db.password | string | `""` | Database user password |
+| db.port | string | `"3306"` | Database port |
+| db.type | string | `"mysql"` | Database type, `"postgresql"` or `"mysql"` |
+| db.user | string | `"root"` | Database user |
+| image.vikings.pullPolicy | string | `"IfNotPresent"` | Container mage pull policy |
+| image.vikings.registry | string | `"ghcr.io"` | Container mage registry |
+| image.vikings.repository | string | `"sifulan-access-federation/vikings-ifirexman"` | Container image repository |
+| image.vikings.tag | string | `""` | Container image version. Defaults to the Chart's appVersion. |
+| ingress.clusterIssuers | string | `"letsencrypt-http-prod"` | Ingress cluster issuer |
+| pvc.logs.storage | string | `"50Mi"` | Logs storage size |
+| pvc.logs.storageClassName | string | `"longhorn"` | Logs storage class |
+| pvc.migrations.storage | string | `"50Mi"` | Migrations storage size |
+| pvc.migrations.storageClassName | string | `"longhorn"` | Migrations storage class |
+| replicaCount | int | `1` | Number of replicas of the VIKINGS Portal |
+| resources.limits.cpu | string | `"2"` | Maximum CPU allocation |
+| resources.limits.memory | string | `"2Gi"` | Maximum memory allocation |
+| resources.requests.cpu | string | `"10m"` | Minimum CPU allocation |
+| resources.requests.memory | string | `"10Mi"` | Minimum memory allocation |
+| vikings.background | file | `""` | VIKINGS background image in `.jpg` |
+| vikings.colour.hex.dark | string | `"#DB630B"` | Dark colour in HEX |
+| vikings.colour.hex.light | string | `"#F9B785"` | Light colour in HEX |
+| vikings.colour.hex.neutral | string | `"#F27920"` | Neutral colour in HEX |
+| vikings.colour.hex.primary | string | `"#C05709"` | Primary colour in HEX |
+| vikings.colour.rgba.dark | string | `"rgba(219, 99, 11, 1)"` | Dark colour in RGBA |
+| vikings.colour.rgba.light | string | `"rgba(249, 183, 133, 1)"` | Light colour in RGBA |
+| vikings.colour.rgba.neutral | string | `"rgba(242, 121, 32, 1)"` | Neutral colour in RGBA |
+| vikings.colour.rgba.primary | string | `"rgba(192, 87, 9, 1)"` | Primary colour in RGBA |
+| vikings.css | file | `""` | Custom VIKINGS `.css` |
+| vikings.debug | bool | `false` | Enable debug mode |
+| vikings.default.email | string | `""` | Default user email |
+| vikings.default.password | string | `"ifirexman"` | Default user password |
+| vikings.default.user | string | `"admin"` | Default user username |
+| vikings.domain | string | `""` | VIKINGS portal domain |
+| vikings.favicon | file | `""` | VIKINGS favicon image in `.ico` |
+| vikings.logo | file | `""` | VIKINGS logo image in `.png` |
+| vikings.secret | string | `""` | VIKINGS secret key |
+| vikings.support | string | `""` | VIKINGS support email address |
