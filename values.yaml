@@ -1,0 +1,166 @@
+# Default values for vikings.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Number of replicas of the VIKINGS Portal
+replicaCount: 1
+
+# Container image
+image:
+  # VIKINGS
+  vikings:
+    # VIKINGS image registry
+    registry: ghcr.io
+    # VIKINGS image repository
+    repository: sifulan-access-federation/vikings-ifirexman
+    # VIKINGS image version
+    # Default: Chart appVersion
+    tag: ""
+    # VIKINGS image pull policy
+    pullPolicy: IfNotPresent
+
+# VIKINGS configuration
+vikings:
+  # Portal domain
+  # Example:
+  # domain: "example.com"
+  domain: ""
+  # Support email
+  # Example:
+  # support: "support@example.com"
+  support: ""
+  # VIKINGS secret key
+  # Recommended to be generated using the following command:
+  # python -c 'import random; print("".join([random.choice("abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)") for i in range(50)]))'
+  secret: ""
+  # Enable debug mode
+  # Example:
+  # debug: false
+  debug: false
+  # Default user configuration
+  default:
+    # Default user username
+    # Example:
+    # user: "admin"
+    user: "admin"
+    # Default user password
+    # Example:
+    # password: "ifirexman"
+    password: "ifirexman"
+    # Default user email
+    # Example:
+    # email: "admin@example.com"
+    email: ""
+  # Colour palette
+  # Note: Not used if vikings.css is defined
+  colour:
+    # Hexadecimal format
+    # Example: "#14638A"
+    hex:
+      # Primary colour
+      primary: "#C05709"
+      # Neutral colour
+      neutral: "#F27920"
+      # Dark colour
+      dark: "#DB630B"
+      # Light colour
+      light: "#F9B785"
+    # RGBA format
+    # Example: "rgba(20, 99, 138, 1)"
+    rgba:
+      # Primary colour
+      primary: "rgba(192, 87, 9, 1)"
+      # Neutral colour
+      neutral: "rgba(242, 121, 32, 1)"
+      # Dark colour
+      dark: "rgba(219, 99, 11, 1)"
+      # Light colour
+      light: "rgba(249, 183, 133, 1)"
+  # Optional: Portal logo.png file
+  logo: ""
+  # Optional: Portal favicon.ico file
+  favicon: ""
+  # Optional: Portal background.jpg file
+  background: ""
+  # Optional: Portal main.css file
+  css: ""
+
+# Database configuration
+db:
+  # Database server
+  # Example:
+  # host: <service>.<namespace>.svc.cluster.local
+  host: mariadb.central-svcs.svc.cluster.local
+  # Database name
+  # Example:
+  # name: "vikings"
+  name: "ifirexman-vikings"
+  # Database port
+  # Example:
+  # port: "5432"
+  # port: "3306"
+  port: "3306"
+  # Database type
+  # Example:
+  # type: "postgresql"
+  # type: "mysql"
+  type: "mysql"
+  # Database user
+  # Example:
+  # user: "vikings"
+  user: "root"
+  # Database user password
+  # Example:
+  # password: "ifirexman"
+  password: ""
+
+# Persistent volume claim configuration
+pvc:
+  # Logs pvc
+  logs:
+    # Storage size
+    # Example:
+    # storage: "50Mi"
+    storage: "50Mi"
+    # Storage class name
+    # Example:
+    # storageClassName: "longhorn"
+    storageClassName: "longhorn"
+  # Migrations pvc
+  migrations:
+    # Storage size
+    # Example:
+    # storage: "50Mi"
+    storage: "50Mi"
+    # Storage class name
+    # Example:
+    # storageClassName: "longhorn"
+    storageClassName: "longhorn"
+
+# Ingress configuration
+ingress:
+  # Cluster issuer
+  # Example:
+  # clusterIssuers: "letsencrypt-http-prod"
+  clusterIssuers: "letsencrypt-http-prod"
+
+# Container resources
+resources:
+  requests:
+    # Minimum CPU allocation
+    # Example:
+    # cpu: "10m"
+    cpu: "10m"
+    # Minimum memory allocation
+    # Example:
+    # memory: "10Mi"
+    memory: "10Mi"
+  limits:
+    # Maximum CPU allocation
+    # Example:
+    # cpu: "2"
+    cpu: "2"
+    # Maximum memory allocation
+    # Example:
+    # memory: "2Gi"
+    memory: "2Gi"
