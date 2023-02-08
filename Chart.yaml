@@ -1,0 +1,19 @@
+apiVersion: v2
+name: vikings
+description: VIKINGS is a Virtual Identity Key Inbounding and MonitorinG System that can be used to manage and monitor usage of user accounts.
+type: application
+version: 0.1.0
+appVersion: "0.0.1-stable"
+keywords:
+  - "vikings"
+  - "idms"
+  - "ifirexman"
+home: "https://github.com/sifulan-access-federation/ifirexman-charts"
+icon: "https://sifulan-access-federation.github.io/ifirexman-charts/ifirexman-shibboleth-idp-logo.png"
+sources:
+  - "https://github.com/sifulan-access-federation/vikings-ifirexman-template"
+  - "https://github.com/sifulan-access-federation/vikings-ifirexman"
+maintainers:
+  - name: "SIFULAN Malaysian Access Federation"
+    email: "support@sifulan.my"
+    url: "https://sifulan.my"
