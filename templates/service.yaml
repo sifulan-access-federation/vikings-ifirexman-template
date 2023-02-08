@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-vikings-svc
+  labels:
+    {{- include "vikings.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - name: {{ .Release.Name }}-vikings
+      protocol: TCP
+      port: 80
+      targetPort: vikings
+  selector:
+    {{- include "vikings.selectorLabels" . | nindent 4 }}

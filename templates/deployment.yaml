@@ -1,0 +1,148 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-vikings
+  labels:
+    {{- include "vikings.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "vikings.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "vikings.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: vikings
+          image: "{{ .Values.image.vikings.registry }}/{{ .Values.image.vikings.repository }}:{{ .Values.image.vikings.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.vikings.pullPolicy }}
+          ports:
+            - name: vikings
+              protocol: TCP
+              containerPort: 80
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            - name: VIKINGS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-vikings-cm
+                  key: VIKINGS_HOST
+            - name: DEBUG
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-vikings-cm
+                  key: DEBUG
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-vikings-secret
+                  key: SECRET_KEY
+            - name: DEFAULT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-vikings-secret
+                  key: DEFAULT_USER
+            - name: DEFAULT_USER_MAIL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-vikings-secret
+                  key: DEFAULT_USER_MAIL
+            - name: DEFAULT_USER_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-vikings-secret
+                  key: DEFAULT_USER_PASS
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-vikings-db-secret
+                  key: DB_HOST
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-vikings-db-secret
+                  key: DB_NAME
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-vikings-db-secret
+                  key: DB_PORT
+            - name: DB_TYPE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-vikings-db-secret
+                  key: DB_TYPE
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-vikings-db-secret
+                  key: DB_USER
+            - name: DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-vikings-db-secret
+                  key: DB_PASS
+          volumeMounts:
+            - name: {{ .Release.Name }}-vikings-logs-pvc
+              mountPath: /vikings/logs
+            - name: {{ .Release.Name }}-vikings-core-migrations-pvc
+              mountPath: /vikings/core/migrations
+            - name: {{ .Release.Name }}-vikings-site-config
+              mountPath: /etc/apache2/sites-available/000-default.conf
+              subPath: site-config.conf
+            - name: {{ .Release.Name }}-vikings-css
+              mountPath: /vikings/core/static/core/css/main.css
+              subPath: main.css
+            {{- if .Values.vikings.logo }}
+            - name: {{ .Release.Name }}-vikings-logo
+              mountPath: /vikings/core/static/core/img/logo.png
+              subPath: logo.png
+            {{- end }}
+            {{- if .Values.vikings.favicon }}
+            - name: {{ .Release.Name }}-vikings-favicon
+              mountPath: /vikings/core/static/core/img/favicon.ico
+              subPath: favicon.ico
+            {{- end }}
+            {{- if .Values.vikings.background }}
+            - name: {{ .Release.Name }}-vikings-background
+              mountPath: /vikings/core/static/core/img/background.jpg
+              subPath: background.jpg
+            {{- end }}
+      volumes:
+        - name: {{ .Release.Name }}-vikings-logs-pvc
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-vikings-logs-pvc
+        - name: {{ .Release.Name }}-vikings-core-migrations-pvc
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-vikings-core-migrations-pvc
+        - name: {{ .Release.Name }}-vikings-site-config
+          configMap:
+            name: {{ .Release.Name }}-vikings-site-config.conf
+        - name: {{ .Release.Name }}-vikings-css
+          configMap:
+            name: {{ .Release.Name }}-vikings-main.css
+        {{- if .Values.vikings.logo }}
+        - name: {{ .Release.Name }}-vikings-logo
+          configMap:
+            name: {{ .Release.Name }}-vikings-logo.png
+        {{- end }}
+        {{- if .Values.vikings.favicon }}
+        - name: {{ .Release.Name }}-vikings-favicon
+          configMap:
+            name: {{ .Release.Name }}-vikings-favicon.ico
+        {{- end }}
+        {{- if .Values.vikings.background }}
+        - name: {{ .Release.Name }}-vikings-background
+          configMap:
+            name: {{ .Release.Name }}-vikings-background.jpg
+        {{- end }}

@@ -1,0 +1,1 @@
+vikings is now installed and configured for {{ .Release.Name }}.
